@@ -62,3 +62,16 @@ services:
             - /conf/radarr/config:/config
             - /data/radarr/movies:/movies
             - /data/radarr/delugedownloads:/downloads
+    lidarr:
+        image: ghcr.io/linuxserver/lidarr
+        container_name: zbox_lidarr
+        ports:
+            - 8686:8686
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Paris
+        volumes:
+            - /conf/lidarr/config:/config
+            - /data/lidarr/music:/music
+            - /data/lidarr/delugedownloads:/downloads
