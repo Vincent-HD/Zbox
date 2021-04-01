@@ -36,3 +36,16 @@ services:
         volumes:
             - /conf/jackett/config:/config
             - /data/jackett/blackhole:/downloads
+    sonarr:
+        image: ghcr.io/linuxserver/sonarr
+        container_name: zbox_sonarr
+        ports:
+            - 8989:8989
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Paris
+        volumes:
+            - /conf/sonarr/config:/config
+            - /data/sonarr/tvseries:/tv
+            - /data/sonarr/delugedownloads:/downloads
