@@ -49,3 +49,16 @@ services:
             - /conf/sonarr/config:/config
             - /data/sonarr/tvseries:/tv
             - /data/sonarr/delugedownloads:/downloads
+    radarr:
+        image: ghcr.io/linuxserver/radarr
+        container_name: zbox_radarr
+        ports:
+            - 7979:7979
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Paris
+        volumes:
+            - /conf/radarr/config:/config
+            - /data/radarr/movies:/movies
+            - /data/radarr/delugedownloads:/downloads
