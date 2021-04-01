@@ -12,3 +12,15 @@ services:
             - data/plex/libray:/config
             - data/plex/tvseries:/tv
             - data/plex/movies:/movies
+    deluge:
+        image: ghcr.io/linuxserver/deluge
+        container_name: zbox_deluge
+        ports:
+            - 8112:8112
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Europe/Paris
+        volumes:
+            - /conf/deluge/config:/config
+            - /data/deluge/downloads:/downloads
