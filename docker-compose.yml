@@ -1,4 +1,4 @@
-version: 3
+version: "2"
 services:
     plex:
         image: ghcr.io/linuxserver/plex
@@ -9,9 +9,9 @@ services:
             - PUID=1000
             - PGID=1000
         volumes:
-            - data/plex/libray:/config
-            - data/plex/tvseries:/tv
-            - data/plex/movies:/movies
+            - ./data/plex/libray:/config
+            - ./data/plex/tvseries:/tv
+            - ./data/plex/movies:/movies
     deluge:
         image: ghcr.io/linuxserver/deluge
         container_name: zbox_deluge
@@ -22,8 +22,8 @@ services:
             - PGID=1000
             - TZ=Europe/Paris
         volumes:
-            - /conf/deluge/config:/config
-            - /data/deluge/downloads:/downloads
+            - ./conf/deluge/config:/config
+            - ./data/deluge/downloads:/downloads
     jackett:
         image: ghcr.io/linuxserver/jackett
         container_name: zbox_jackett
@@ -34,8 +34,8 @@ services:
             - PGID=1000
             - TZ=Europe/Paris
         volumes:
-            - /conf/jackett/config:/config
-            - /data/jackett/blackhole:/downloads
+            - ./conf/jackett/config:/config
+            - ./data/jackett/blackhole:/downloads
     sonarr:
         image: ghcr.io/linuxserver/sonarr
         container_name: zbox_sonarr
@@ -46,9 +46,9 @@ services:
             - PGID=1000
             - TZ=Europe/Paris
         volumes:
-            - /conf/sonarr/config:/config
-            - /data/sonarr/tvseries:/tv
-            - /data/sonarr/delugedownloads:/downloads
+            - ./conf/sonarr/config:/config
+            - ./data/sonarr/tvseries:/tv
+            - ./data/sonarr/delugedownloads:/downloads
     radarr:
         image: ghcr.io/linuxserver/radarr
         container_name: zbox_radarr
@@ -59,9 +59,9 @@ services:
             - PGID=1000
             - TZ=Europe/Paris
         volumes:
-            - /conf/radarr/config:/config
-            - /data/radarr/movies:/movies
-            - /data/radarr/delugedownloads:/downloads
+            - ./conf/radarr/config:/config
+            - ./data/radarr/movies:/movies
+            - ./data/radarr/delugedownloads:/downloads
     lidarr:
         image: ghcr.io/linuxserver/lidarr
         container_name: zbox_lidarr
@@ -72,6 +72,6 @@ services:
             - PGID=1000
             - TZ=Europe/Paris
         volumes:
-            - /conf/lidarr/config:/config
-            - /data/lidarr/music:/music
-            - /data/lidarr/delugedownloads:/downloads
+            - ./conf/lidarr/config:/config
+            - ./data/lidarr/music:/music
+            - ./data/lidarr/delugedownloads:/downloads
