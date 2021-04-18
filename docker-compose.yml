@@ -1,10 +1,63 @@
 version: "2"
 services:
+    traefik:
+        image: traefik:v2.4
+        container_name: zbox_traefik
+        command:
+            - --api.insecure=true
+            - --providers.docker
+            - --log.level=DEBUG
+            # Create web http:80 entrypoint
+            - --entryPoints.web.address=:80
+            # Create websecure https:443 entrypoint
+            - --entrypoints.websecure.address=:443
+            # Bind the default certresolver name to the entrypoint
+            - --entrypoints.websecure.http.tls.certResolver=CFDNSchallenge
+            # Define all the domain names for the entrypoint, *.foo.bar = wildcard certificate
+            - --entrypoints.websecure.http.tls.domains[0].main=*.zbox.ovh
+            # Bind to websecure the middleware named globalauth
+            - --entrypoints.websecure.http.middlewares=globalauth
+            # Add a redirection on web entrypoint pointing to websecure
+            - --entrypoints.web.http.redirections.entryPoint.to=websecure
+            # Tell the redirection to change the scheme from http to https
+            - --entrypoints.web.http.redirections.entryPoint.scheme=https
+            - --providers.docker.network=zbox-network
+            # This avoid traefik to monitor every container in Docker
+            - --providers.docker.exposedByDefault=false
+            # Transform foo-bar from docker-compose into foo.bar, foo = docker-compose's project name, bar = container's name
+            - --providers.docker.defaultRule=Host(`{{ splitList "-" .Name | join "."}}.ovh`)
+            # - --providers.docker.defaultRule=Host(`{{ .Name }}.ovh`)
+
+
+            
+            - --certificatesresolvers.CFDNSchallenge.acme.dnschallenge=true
+            - --certificatesresolvers.CFDNSchallenge.acme.dnschallenge.provider=cloudflare
+            - --certificatesresolvers.CFDNSchallenge.acme.storage=/letsencrypt/acme.json
+        ports:
+            # The HTTP port
+            - "80:80"
+            - "443:443"
+            # The Web UI (enabled by --api.insecure=true)
+            # - "8080:8080"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./data/traefik/letsencrypt:/letsencrypt
+        environment:
+            - CF_API_EMAIL=adresse@gmail.com
+            - CF_DNS_API_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXXX
+        labels:
+            - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+            - "traefik.enable=true"
+            - "traefik.http.middlewares.globalauth.basicauth.users=zeldri:$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+        networks:
+            - zbox-network
+
+
     plex:
         image: ghcr.io/linuxserver/plex
         container_name: zbox_plex
-        ports:
-            - 32400:32400
+        # ports:
+            # - 32400:32400
         environment:
             - PUID=1000
             - PGID=1000
@@ -12,11 +65,18 @@ services:
             - ./data/plex/libray:/config
             - ./data/plex/tvseries:/tv
             - ./data/plex/movies:/movies
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.services.plex.loadbalancer.server.port=32400" #Because plex exposes multiple ports and 32400 isn't the first one
+        networks:
+            - zbox-network
+
+
     deluge:
         image: ghcr.io/linuxserver/deluge
         container_name: zbox_deluge
-        ports:
-            - 8112:8112
+        # ports:
+        #     - 8112:8112
         environment:
             - PUID=1000
             - PGID=1000
@@ -24,11 +84,17 @@ services:
         volumes:
             - ./conf/deluge/config:/config
             - ./data/deluge/downloads:/downloads
+        labels:
+            - "traefik.enable=true"
+        networks:
+            - zbox-network
+            
+
     jackett:
         image: ghcr.io/linuxserver/jackett
         container_name: zbox_jackett
-        ports:
-            - 9117:9117
+        # ports:
+        #     - 9117:9117
         environment:
             - PUID=1000
             - PGID=1000
@@ -36,11 +102,17 @@ services:
         volumes:
             - ./conf/jackett/config:/config
             - ./data/jackett/blackhole:/downloads
+        labels:
+            - "traefik.enable=true"
+        networks:
+            - zbox-network
+
+
     sonarr:
         image: ghcr.io/linuxserver/sonarr
         container_name: zbox_sonarr
-        ports:
-            - 8989:8989
+        # ports:
+        #     - 8989:8989
         environment:
             - PUID=1000
             - PGID=1000
@@ -49,11 +121,17 @@ services:
             - ./conf/sonarr/config:/config
             - ./data/sonarr/tvseries:/tv
             - ./data/sonarr/delugedownloads:/downloads
+        labels:
+            - "traefik.enable=true"
+        networks:
+            - zbox-network
+
+
     radarr:
         image: ghcr.io/linuxserver/radarr
         container_name: zbox_radarr
-        ports:
-            - 7878:7878
+        # ports:
+        #     - 7878:7878
         environment:
             - PUID=1000
             - PGID=1000
@@ -62,6 +140,12 @@ services:
             - ./conf/radarr/config:/config
             - ./data/radarr/movies:/movies
             - ./data/radarr/delugedownloads:/downloads
+        labels:
+            - "traefik.enable=true"
+        networks:
+            - zbox-network
+
+
     lidarr:
         image: ghcr.io/linuxserver/lidarr
         container_name: zbox_lidarr
@@ -75,3 +159,20 @@ services:
             - ./conf/lidarr/config:/config
             - ./data/lidarr/music:/music
             - ./data/lidarr/delugedownloads:/downloads
+        labels:
+            - "traefik.enable=true"
+        networks:
+            - zbox-network
+
+
+    organizr:
+        image: organizr/organizr
+        container_name: zbox_organizr
+        volumes:
+            - ./conf/organizr/config:/config
+        labels:
+            - "traefik.enable=true"
+
+networks: 
+    zbox-network:
+        name: zbox-network
