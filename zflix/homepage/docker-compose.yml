@@ -1,0 +1,16 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    volumes:
+      - /mnt/Pool1/Config/Zflix/homepage:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock # (optional) For docker integrations
+    labels:
+      zbox: true
+      traefik.http.routers.homepage.rule: Host(`zbox.ovh`)
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true

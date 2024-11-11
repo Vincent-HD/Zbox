@@ -1,0 +1,25 @@
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    ports:
+      # https://docs.linuxserver.io/images/docker-jellyfin/#parameters
+      - 7359:7359/udp
+      - 1900:1900/udp
+    volumes:
+      - /mnt/Pool1/Config/Zflix/traefik/jellyfin:/config
+      - /mnt/Pool2/Zflix/medias/tvseries:/data/tvseries
+      - /mnt/Pool2/Zflix/medias/movies:/data/movies
+    environment:
+      - PUID=${USERID}
+      - PGID=${GROUPID}
+      - TZ=${TIMEZONE}
+    labels:
+      zbox: true
+      traefik.http.services.jellyfin.loadbalancer.server.port: 8096
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true

@@ -1,0 +1,20 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    volumes:
+      - /mnt/Pool1/Config/Zflix/radarr:/config
+      - /mnt/Pool2/Zflix/medias/movies:/movies
+      - /mnt/Pool2/Zflix/downloads:/downloads
+    environment:
+      - PUID=${USERID}
+      - PGID=${GROUPID}
+      - TZ=${TIMEZONE}
+    labels:
+      zbox: true
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true

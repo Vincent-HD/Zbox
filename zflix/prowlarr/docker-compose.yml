@@ -1,0 +1,18 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    volumes:
+      - /mnt/Pool1/Config/Zflix/prowlarr:/config
+    environment:
+      - PUID=${USERID}
+      - PGID=${GROUPID}
+      - TZ=${TIMEZONE}
+    labels:
+      zbox: true
+    restart: unless-stopped
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
