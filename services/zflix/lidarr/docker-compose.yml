@@ -1,16 +1,16 @@
 services:
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
     volumes:
-      - /mnt/Pool1/Config/Zflix/sonarr:/config
-      - /mnt/Pool2/Zflix/medias/tvseries:/tvseries
+      - /mnt/Pool1/Config/Zflix/lidarr:/config
+      - /mnt/Pool2/Zflix/medias/music:/music
       - /mnt/Pool2/Zflix/downloads:/downloads
     environment:
       - PUID=${USERID}
       - PGID=${GROUPID}
       - TZ=${TIMEZONE}
     labels:
-      zbox: true
+      traefik.enable: true
     restart: unless-stopped
     networks:
       - dokploy-network

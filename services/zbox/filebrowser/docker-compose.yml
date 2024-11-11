@@ -10,7 +10,7 @@ services:
       interval: 30s
       timeout: 10s
     labels:
-      zbox: true
+      traefik.enable: true
     restart: unless-stopped
     networks:
       - dokploy-network

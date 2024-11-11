@@ -1,16 +1,16 @@
 services:
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
     volumes:
-      - /mnt/Pool1/Config/Zflix/radarr:/config
-      - /mnt/Pool2/Zflix/medias/movies:/movies
+      - /mnt/Pool1/Config/Zflix/sonarr:/config
+      - /mnt/Pool2/Zflix/medias/tvseries:/tvseries
       - /mnt/Pool2/Zflix/downloads:/downloads
     environment:
       - PUID=${USERID}
       - PGID=${GROUPID}
       - TZ=${TIMEZONE}
     labels:
-      zbox: true
+      traefik.enable: true
     restart: unless-stopped
     networks:
       - dokploy-network
